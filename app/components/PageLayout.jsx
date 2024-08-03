@@ -8,6 +8,9 @@ import {
   PredictiveSearchForm,
   PredictiveSearchResults,
 } from '~/components/Search';
+import HeaderMy from './HeaderMy';
+import FooterMy from './FooterMy';
+import StickyNavbar from './StickyNavbar';
 
 /**
  * @param {PageLayoutProps}
@@ -20,13 +23,21 @@ export function PageLayout({
   isLoggedIn,
   publicStoreDomain,
 }) {
+  console.log(cart)
   return (
     <Aside.Provider>
       <CartAside cart={cart} />
       <SearchAside />
       <MobileMenuAside header={header} publicStoreDomain={publicStoreDomain} />
       {header && (
-        <Header
+        // <Header
+        //   header={header}
+        //   cart={cart}
+        //   isLoggedIn={isLoggedIn}
+        //   publicStoreDomain={publicStoreDomain}
+        // />
+        // <HeaderMy/>
+        <StickyNavbar
           header={header}
           cart={cart}
           isLoggedIn={isLoggedIn}
@@ -34,7 +45,12 @@ export function PageLayout({
         />
       )}
       <main>{children}</main>
-      <Footer
+      {/* <Footer
+        footer={footer}
+        header={header}
+        publicStoreDomain={publicStoreDomain}
+      /> */}
+      <FooterMy
         footer={footer}
         header={header}
         publicStoreDomain={publicStoreDomain}

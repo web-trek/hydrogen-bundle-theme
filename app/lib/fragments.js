@@ -111,6 +111,11 @@ const MENU_FRAGMENT = `#graphql
     title
     type
     url
+    items {
+      title
+      type
+      url
+    }
   }
   fragment ChildMenuItem on MenuItem {
     ...MenuItem

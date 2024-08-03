@@ -1,0 +1,100 @@
+    #element-1664890690c0b1684f-0 {
+        --color-background-cards: #191919;
+    }
+
+    #element-1664890690c0b1684f-0 {
+        --color-text-cards: #efefef;
+        --color-foreground-cards: #000;
+        --color-secondary-text-cards: rgba(239, 239, 239, 0.6);
+    }
+
+    #element-1664890690c0b1684f-0 {
+        --color-borders-cards: none;
+    }
+
+    #element-1664890690c0b1684f-0 {
+        --border-radius-cards: 10px;
+    }
+
+    #element-1664890690c0b1684f-0 img {
+        border-radius: 10px 10px 0 0;
+    }
+
+    #element-1664890690c0b1684f-0 video {
+        border-radius: 10px 10px 0 0;
+    }
+
+    #element-1664890690c0b1684f-2 {
+        --color-background-cards: #191919;
+    }
+
+    #element-1664890690c0b1684f-2 {
+        --color-text-cards: #ffffff;
+        --color-foreground-cards: #000;
+        --color-secondary-text-cards: rgba(255, 255, 255, 0.6);
+    }
+
+    #element-1664890690c0b1684f-2 {
+        --color-borders-cards: none;
+    }
+
+    #element-1664890690c0b1684f-2 {
+        --border-radius-cards: 10px;
+    }
+
+    #element-1664890690c0b1684f-2 img {
+        border-radius: 10px 10px 0 0;
+    }
+
+    #element-1664890690c0b1684f-2 video {
+        border-radius: 10px 10px 0 0;
+    }
+
+    #element-1664890690c0b1684f-1 {
+        --color-background-cards: #191919;
+    }
+
+    #element-1664890690c0b1684f-1 {
+        --color-text-cards: #ffffff;
+        --color-foreground-cards: #000;
+        --color-secondary-text-cards: rgba(255, 255, 255, 0.6);
+    }
+
+    #element-1664890690c0b1684f-1 {
+        --color-borders-cards: none;
+    }
+
+    #element-1664890690c0b1684f-1 {
+        --border-radius-cards: 10px;
+    }
+
+    #element-1664890690c0b1684f-1 img {
+        border-radius: 10px 10px 0 0;
+    }
+
+    #element-1664890690c0b1684f-1 video {
+        border-radius: 10px 10px 0 0;
+    }
+
+    .card__image{
+        position: relative !important;
+        height: auto !important;
+    }
+    .card__image figure{
+        position: relative !important;
+        height: auto;
+    }
+    .card__image img{
+        position: relative !important;
+
+    }
+
+    .featured__collections .card{
+        height: 100% !important;
+    }
+    .featured__collections .card__wrapper{
+        height: 100% !important;
+    display: flex;
+    flex-direction: column;
+    /* justify-content: space-between; */
+    }

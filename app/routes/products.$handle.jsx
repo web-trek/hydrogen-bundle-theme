@@ -10,6 +10,9 @@ import {getVariantUrl} from '~/lib/variants';
 import {ProductPrice} from '~/components/ProductPrice';
 import {ProductImage} from '~/components/ProductImage';
 import {ProductForm} from '~/components/ProductForm';
+import ProductDetails from '~/components/ProductDetails';
+import ProductRecommendation from '~/components/ProductRecommendation';
+import MultiIconWithText from '~/components/MultiIconWithText';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -99,8 +102,17 @@ function loadDeferredData({context, params}) {
       return null;
     });
 
+    const recommendedProducts = context.storefront
+    .query(RECOMMENDED_PRODUCTS_QUERY)
+    .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      console.error(error);
+      return null;
+    });
+
   return {
     variants,
+    recommendedProducts,
   };
 }
 
@@ -129,16 +141,20 @@ function redirectToFirstVariant({product, request}) {
 
 export default function Product() {
   /** @type {LoaderReturnData} */
-  const {product, variants} = useLoaderData();
+  const {product, variants, recommendedProducts} = useLoaderData();
   const selectedVariant = useOptimisticVariant(
     product.selectedVariant,
     variants,
   );
 
+  // console.log(product)
+
   const {title, descriptionHtml} = product;
 
   return (
-    <div className="product">
+    <>
+    <div>
+    {/* <div className="product">
       <ProductImage image={selectedVariant?.image} />
       <div className="product-main">
         <h1>{title}</h1>
@@ -147,6 +163,7 @@ export default function Product() {
           compareAtPrice={selectedVariant?.compareAtPrice}
         />
         <br />
+
         <Suspense
           fallback={
             <ProductForm
@@ -169,6 +186,7 @@ export default function Product() {
             )}
           </Await>
         </Suspense>
+
         <br />
         <br />
         <p>
@@ -193,7 +211,15 @@ export default function Product() {
           ],
         }}
       />
+    </div> */}
     </div>
+
+    <div className="product_details_wrapper !mb-24">
+    <ProductDetails product={product} variants={variants} />
+    <ProductRecommendation recommendedProducts={recommendedProducts} />
+    <MultiIconWithText/>
+    </div>
+    </>
   );
 }
 
@@ -246,6 +272,22 @@ const PRODUCT_FRAGMENT = `#graphql
       name
       values
     }
+    collections(first: 5) {
+      edges {
+        node {
+          title
+          handle
+        }
+      }
+    }
+      images(first: 5) {
+          edges {
+            node {
+              src
+              altText
+            }
+          }
+        }
     selectedVariant: variantBySelectedOptions(selectedOptions: $selectedOptions, ignoreUnknownOptions: true, caseInsensitiveMatch: true) {
       ...ProductVariant
     }
@@ -296,6 +338,39 @@ const VARIANTS_QUERY = `#graphql
   ) @inContext(country: $country, language: $language) {
     product(handle: $handle) {
       ...ProductVariants
+    }
+  }
+`;
+
+// RECOMMENDED PRODUCTS FOR PDP
+
+const RECOMMENDED_PRODUCTS_QUERY = `#graphql
+  fragment RecommendedProduct on Product {
+    id
+    title
+    handle
+    priceRange {
+      minVariantPrice {
+        amount
+        currencyCode
+      }
+    }
+    images(first: 1) {
+      nodes {
+        id
+        url
+        altText
+        width
+        height
+      }
+    }
+  }
+  query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
+    @inContext(country: $country, language: $language) {
+    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
+      nodes {
+        ...RecommendedProduct
+      }
     }
   }
 `;

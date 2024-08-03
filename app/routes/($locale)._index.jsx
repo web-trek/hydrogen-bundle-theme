@@ -2,6 +2,18 @@ import {defer} from '@shopify/remix-oxygen';
 import {Await, useLoaderData, Link} from '@remix-run/react';
 import {Suspense} from 'react';
 import {Image, Money} from '@shopify/hydrogen';
+import FeaturedCollectionPlus from '~/components/FeaturedCollectionPlus';
+import heroimage from '../assets/hero.webp'
+import HeroSection from '~/components/HeroSection';
+import '../components/Styles/HeaderMy.css'
+import '../components/Styles/Theme.css'
+import CollectionList from '~/components/CollectionList';
+import CollectionsItems from '~/components/CollectionsItems';
+import ImageWIthText from '~/components/ImageWIthText';
+import DetailProductList from '~/components/DetailProductList';
+import BannerWithText from '~/components/BannerWithText';
+import FooterMy from '~/components/FooterMy';
+import ControlledCarousel from '~/components/ControlledCarousel';
 
 /**
  * @type {MetaFunction}
@@ -29,13 +41,25 @@ export async function loader(args) {
  * @param {LoaderFunctionArgs}
  */
 async function loadCriticalData({context}) {
-  const [{collections}] = await Promise.all([
-    context.storefront.query(FEATURED_COLLECTION_QUERY),
+  // const [{collections}] = await Promise.all([
+  //   context.storefront.query(COLLECTION_LIST_QUERY),
+  //   // Add other queries here, so that they are loaded in parallel
+  // ]);
+
+  const [{collection}] = await Promise.all([
+    context.storefront.query(CUSTOM_COLLECTION_QUERY),
     // Add other queries here, so that they are loaded in parallel
   ]);
 
+  // const [{featuredcollection}] = await Promise.all([
+  //   context.storefront.query(FEATURED_COLLECTION_QUERY2),
+  //   // Add other queries here, so that they are loaded in parallel
+  // ]);
+
   return {
-    featuredCollection: collections.nodes[0],
+    // featuredCollection: collections.nodes[0],
+    collection: collection,
+    // featuredcollection2: featuredcollection,
   };
 }
 
@@ -54,19 +78,48 @@ function loadDeferredData({context}) {
       return null;
     });
 
+  const collectionlist = context.storefront
+    .query(COLLECTION_LIST_QUERY)
+    .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      console.error(error);
+      return null;
+    });
+
+  const featuredcollection = context.storefront
+    .query(FEATURED_COLLECTION_QUERY2)
+    .catch((error) => {
+      // Log query errors, but don't throw them so the page can still render
+      console.error(error);
+      return null;
+    });
+
   return {
     recommendedProducts,
+    collectionlist,
+    featuredcollection,
   };
 }
 
 export default function Homepage() {
   /** @type {LoaderReturnData} */
   const data = useLoaderData();
+  // console.log(data)
   return (
-    <div className="home">
-      <FeaturedCollection collection={data.featuredCollection} />
-      <RecommendedProducts products={data.recommendedProducts} />
+    <>
+    {/* <FeaturedCollection collection={data.featuredCollection} /> */}
+    <HeroSection/>
+    <div className="home mx-8">
+      <CollectionList collectionsdata={data.collectionlist} />
+      <CollectionsItems products={data.featuredcollection} />
+      <ImageWIthText/>
+      <DetailProductList products={data.recommendedProducts}/>
+      <BannerWithText/>
+      {/* <FooterMy/> */}
+      {/* <FeaturedCollectionPlus collection={data.collection}/> */}
+      {/* <RecommendedProducts products={data.recommendedProducts} /> */}
     </div>
+    </>
   );
 }
 
@@ -75,20 +128,24 @@ export default function Homepage() {
  *   collection: FeaturedCollectionFragment;
  * }}
  */
+
+
+
 function FeaturedCollection({collection}) {
   if (!collection) return null;
-  const image = collection?.image;
+  // const image = collection?.image;
   return (
     <Link
       className="featured-collection"
       to={`/collections/${collection.handle}`}
     >
-      {image && (
-        <div className="featured-collection-image">
-          <Image data={image} sizes="100vw" />
+      {heroimage && (
+        <div className="featured-collection-image w-full h-[98vh]">
+          <img src={heroimage} alt="" className='w-full h-full !rounded-none' />
+          {/* <Image data={heroimage} sizes="100vw" /> */}
         </div>
       )}
-      <h1>{collection.title}</h1>
+      {/* <h1>{collection.title}</h1> */}
     </Link>
   );
 }
@@ -180,13 +237,116 @@ const RECOMMENDED_PRODUCTS_QUERY = `#graphql
   }
   query RecommendedProducts ($country: CountryCode, $language: LanguageCode)
     @inContext(country: $country, language: $language) {
-    products(first: 4, sortKey: UPDATED_AT, reverse: true) {
+    products(first: 3, sortKey: UPDATED_AT, reverse: true) {
       nodes {
         ...RecommendedProduct
       }
     }
   }
 `;
+
+const PRODUCT_ITEM_FRAGMENT = `#graphql
+  fragment MoneyProductItem on MoneyV2 {
+    amount
+    currencyCode
+  }
+  fragment ProductItem on Product {
+    id
+    handle
+    title
+    featuredImage {
+      id
+      altText
+      url
+      width
+      height
+    }
+    priceRange {
+      minVariantPrice {
+        ...MoneyProductItem
+      }
+      maxVariantPrice {
+        ...MoneyProductItem
+      }
+    }
+    variants(first: 1) {
+      nodes {
+        selectedOptions {
+          name
+          value
+        }
+      }
+    }
+  }
+`;
+const CUSTOM_COLLECTION_QUERY = `#graphql
+  ${PRODUCT_ITEM_FRAGMENT}
+  query collection {
+    collection(id: "gid://shopify/Collection/482617458982") {
+      id
+      title
+      description
+      products(first: 4) {
+        nodes {
+          ...ProductItem
+        }
+      }
+    }
+  }
+`;
+
+const COLLECTION_LIST_QUERY = `#graphql
+  query collectionlist {
+  collections(first: 3) {
+    edges {
+      node {
+        id
+        title
+        handle
+        image {
+          id
+          originalSrc
+        }
+      }
+    }
+  }}
+`;
+
+const FEATURED_COLLECTION_QUERY2 =`#graphql
+  query featuredcollection {
+    collection(id: "gid://shopify/Collection/423684407553"){
+      id
+      title
+      handle
+      products(first: 4){
+        nodes {
+          id
+          handle
+          title
+          featuredImage {
+            id
+            altText
+            url
+            width
+            height
+          }
+          priceRange {
+            minVariantPrice {
+              amount
+              currencyCode
+            }
+            maxVariantPrice {
+              amount
+              currencyCode
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+
 
 /** @typedef {import('@shopify/remix-oxygen').LoaderFunctionArgs} LoaderFunctionArgs */
 /** @template T @typedef {import('@remix-run/react').MetaFunction<T>} MetaFunction */

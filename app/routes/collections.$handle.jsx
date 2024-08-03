@@ -8,6 +8,9 @@ import {
   Analytics,
 } from '@shopify/hydrogen';
 import {useVariantUrl} from '~/lib/variants';
+import CollectionBanner from '~/components/CollectionBanner';
+import CollectionsItems from '~/components/CollectionsItems';
+import CollectionGrid from '~/components/CollectionGrid';
 
 /**
  * @type {MetaFunction<typeof loader>}
@@ -78,8 +81,10 @@ export default function Collection() {
   const {collection} = useLoaderData();
 
   return (
-    <div className="collection">
-      <h1>{collection.title}</h1>
+    <div className="collection !mb-12">
+      {/* <h1>{collection.title}</h1> */}
+      <CollectionBanner collection={collection} />
+      <CollectionGrid collection={collection}/>
       <p className="collection-description">{collection.description}</p>
       <Pagination connection={collection.products}>
         {({nodes, isLoading, PreviousLink, NextLink}) => (
@@ -87,7 +92,7 @@ export default function Collection() {
             <PreviousLink>
               {isLoading ? 'Loading...' : <span>↑ Load previous</span>}
             </PreviousLink>
-            <ProductsGrid products={nodes} />
+            {/* <ProductsGrid products={nodes} /> */}
             <br />
             <NextLink>
               {isLoading ? 'Loading...' : <span>Load more ↓</span>}
